@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
+
 namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
@@ -66,7 +67,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
             public string? PostalCode { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -75,7 +76,12 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Name = user.Name,
+                City = user.City,
+                State = user.State,
+                PostalCode = user.PostalCode,
+                StreetAddress = user.StreetAddress
             };
         }
 
@@ -87,7 +93,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            await LoadAsync(user);
+            await LoadAsync((ApplicationUser)user);
             return Page();
         }
 
@@ -101,7 +107,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                //await LoadAsync(user);
+                await LoadAsync((ApplicationUser)user);
                 return Page();
             }
 
@@ -115,6 +121,15 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            //user.Name = Input.Name;
+            //user.StreetAddress = Input.StreetAddress;
+            //user.City = Input.City;
+            //user.State = Input.State;
+            //user.PostalCode = Input.PostalCode;
+            //user.PhoneNumber = Input.PhoneNumber;
+
+            await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
