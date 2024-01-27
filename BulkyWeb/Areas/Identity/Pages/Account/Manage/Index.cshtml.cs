@@ -87,19 +87,19 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            ApplicationUser user = (ApplicationUser)await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            await LoadAsync((ApplicationUser)user);
+            await LoadAsync(user);
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            ApplicationUser user = (ApplicationUser)await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -107,7 +107,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                await LoadAsync((ApplicationUser)user);
+                await LoadAsync(user);
                 return Page();
             }
 
@@ -122,12 +122,12 @@ namespace BulkyWeb.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            //user.Name = Input.Name;
-            //user.StreetAddress = Input.StreetAddress;
-            //user.City = Input.City;
-            //user.State = Input.State;
-            //user.PostalCode = Input.PostalCode;
-            //user.PhoneNumber = Input.PhoneNumber;
+            user.Name = Input.Name;
+            user.StreetAddress = Input.StreetAddress;
+            user.City = Input.City;
+            user.State = Input.State;
+            user.PostalCode = Input.PostalCode;
+            user.PhoneNumber = Input.PhoneNumber;
 
             await _userManager.UpdateAsync(user);
 
