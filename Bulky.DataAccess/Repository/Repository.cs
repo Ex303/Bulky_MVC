@@ -27,25 +27,38 @@ namespace Bulky.DataAccess.Repository
             dbset.Add(entity);
         }
 
-        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
             IQueryable<T> query = dbset;
+            if (tracked)
+                query = dbset;
+            else
+                query = dbset.AsNoTracking();
+
             query = query.Where(filter);
-			if (!string.IsNullOrEmpty(includeProperties))
-			{
-				foreach (var includeProp in includeProperties
-					.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-				{
-					query = query.Include(includeProp);
-				}
-			}
-			return query.FirstOrDefault();
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
+            return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter, string? includeProperties = null)
         {
+
             IQueryable<T> query = dbset;
-            if(!string.IsNullOrEmpty(includeProperties))
+
+            if (filter != null)
+                query = query.Where(filter);
+       
+            
+            
+            if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach(var includeProp in includeProperties
                     .Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries)) 
