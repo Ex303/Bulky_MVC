@@ -13,6 +13,7 @@ using Stripe.Checkout;
 namespace BulkyWeb.Areas.Admin.Controllers
 {
 	[Area("admin")]
+	[Authorize]
 	public class OrderController : Controller
 	{
 		public readonly IUnitOfWork _unitOfWork;
